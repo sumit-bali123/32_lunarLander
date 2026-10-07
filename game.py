@@ -11,8 +11,15 @@ FOOT = 12
 
 def ship_color(fuel_ratio):
     """Return an (r, g, b) hull colour for the given fuel ratio (1.0 = full), or None for the default."""
-    pass
-
+    # Clamp ratio between 0.0 and 1.0
+    r = max(0.0, min(1.0, fuel_ratio))
+    
+    # Linearly interpolate from low-fuel red (255, 50, 50) to full-fuel off-white (230, 230, 240)
+    red = int(255 + (230 - 255) * r)
+    green = int(50 + (230 - 50) * r)
+    blue = int(50 + (240 - 50) * r)
+    
+    return (red, green, blue)
 
 def on_landing(score):
     """Called after a successful landing with the points just earned; add fireworks or bonuses here."""
