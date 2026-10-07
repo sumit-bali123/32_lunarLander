@@ -21,9 +21,15 @@ def ship_color(fuel_ratio):
     
     return (red, green, blue)
 
+LANDING_POS = [0, 0]
+LANDING_SCORE = 0
+LANDING_TIME = 0
+
 def on_landing(score):
     """Called after a successful landing with the points just earned; add fireworks or bonuses here."""
-    pass
+    global LANDING_SCORE, LANDING_TIME
+    LANDING_SCORE = score
+    LANDING_TIME = pygame.time.get_ticks()
 
 
 def bonus_life_threshold():
@@ -85,6 +91,8 @@ class Game:
             earned = int((100 + self.fuel) * pad[3])
             self.score += earned
             self.state, self.message = "landed", f"Perfect landing! +{earned}  (Space = next level)"
+            LANDING_POS[0] = self.pos.x
+            LANDING_POS[1] = self.pos.y
             on_landing(earned)
             return
         self.lives -= 1
@@ -161,6 +169,26 @@ class Game:
         if self.message:
             label = self.font.render(self.message, True, (255, 255, 120))
             screen.blit(label, label.get_rect(center=(WIDTH // 2, HEIGHT // 3)))
+        if LANDING_TIME:
+            elapsed = (pygame.time.get_ticks() - LANDING_TIME) / 1000
+
+            if elapsed < 1.0:
+                radius = int(20 + elapsed * 100)
+                pygame.draw.circle(
+                    screen,
+                    (255, 220, 80),
+                    (int(LANDING_POS[0]), int(LANDING_POS[1])),
+                    radius,
+                    3
+                )
+
+                pygame.draw.circle(
+                    screen,
+                    (255, 120, 40),
+                    (int(LANDING_POS[0]), int(LANDING_POS[1])),
+                    max(5, radius // 2),
+                    2
+                )
 
 
 def main():
